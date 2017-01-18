@@ -67,6 +67,14 @@ and upload to BOSH director:
 bosh upload release
 ```
 
+To create a final release:
+```
+bosh create release --force --with-tarball --final --name datadog-agent
+git tag <version>
+git push origin --tags
+```
+and then upload the tarball to github
+
 
 # Author
 
