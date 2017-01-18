@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# job name & index of this VM within cluster
+export DEPLOYMENT_NAME="<%= spec.deployment %>"
+
+# e.g. JOB_NAME=redis, JOB_INDEX=0
+export JOB_NAME='<%= name %>'
+export JOB_INDEX="<%= spec.index %>"
+# full job name, like redis/0 or webapp/3
+export JOB_FULL="$JOB_NAME/$JOB_INDEX"
+export JOB_AZ="<%= spec.az %>"
+export JOB_DNS_DOMAIN="<%= spec.dns_domain_name %>"
+

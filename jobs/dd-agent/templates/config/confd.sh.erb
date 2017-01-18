@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+#
+set -e # exit immediately if a simple command exits with a non-zero status
+set -u # report the usage of uninitialized variables
+
+JOBS_DIR="/var/vcap/jobs"
+
+
+# Get a list of pids from all jobs
+function get_monit_pids {
+    local base_path="${1}"
+
+    local exclude_path="*/dd-agent/*"
+    local pids=()
+    for monit in $(find -L "${base_path}" -path "*/monit" -not -path "${exclude_path}"); do
+        for pidfile in $(sed -n -e 's/.* pidfile[ \t]*\([a-zA-Z0-9\/_\.-]*\).*/\1/p' "${monit}"); do
+            if [ -e "$pidfile" ]; then
+                pid=$(<${pidfile})
+                # append
+                pids+=("${pid}")
+            fi
+        done
+    done
+    if [[ ${#pids[@]} > 0 ]]; then
+        echo "${pids[@]}"
+    fi
+}
+
+function get_monit_files {
+    local base_path="${1}"
+
+    local exclude_path="*/dd-agent/*"
+    local monitfiles=()
+    for monit in $(find -L "${base_path}" -path "*/monit" -not -path "${exclude_path}"); do
+        # append
+        monitfiles+=("${monit}")
+    done
+    if [[ ${#monitfiles[@]} > 0 ]]; then
+        echo "${monitfiles[@]}"
+    fi
+}
+
+function get_monit_services {
+    local monit=${1}
+
+    awk 'BEGIN {
+        check_found=0
+        pidfile_found=0
+        name=""
+        pidfile=""
+    } {
+        for (i=1; i<=NF; i++) {
+            if ($i == "process") {
+                check_found=1
+                pidfile_found=0
+                continue
+            } else if ($i == "pidfile") {
+                if (check_found == 2) pidfile_found=1
+                continue
+            }
+            if (check_found == 1) {
+                name=$i
+                check_found=2
+            } else if (pidfile_found == 1) {
+                pidfile=$i
+                pidfile_found=0
+                check_found=0
+                printf("%s|%s\n", name, pidfile)
+            }
+        }
+    }' "$monit"
+    rvalue=$?
+    return $rvalue
+}
+
+# Create dd processes
+function create_dd_instances {
+    local base_dir="${1}"
+
+    # instances:
+    for monit in $(get_monit_files "${base_dir}"); do
+        for entry in $(get_monit_services "${monit}"); do
+            # format: registry|/var/vcap/sys/run/registry/registry.pid
+            echo "  - name: ${entry%|*}"
+            echo "    pid_file: ${entry#*|}"
+            echo
+        done
+    done
+}
+
+
+
+# Create configurations
+rm -rf $CONFD_DIR
+mkdir -p $CONFD_DIR
+
+# Process checks
+<% if p('dd.generate_processes') == true || p('dd.generate_processes') =~ (/(true|t|yes|y|1)$/i) %>
+cat <<EOF > "${CONFD_DIR}/process.yaml"
+---
+init_config:
+  pid_cache_duration: 120
+
+instances:
+<% if p('dd.generate_monit_processes') == true || p('dd.generate_monit_processes') =~ (/(true|t|yes|y|1)$/i) %>
+$(create_dd_instances "$JOBS_DIR")
+<% end %>
+<% if p('dd.generate_system_processes') == true || p('dd.generate_system_processes') =~ (/(true|t|yes|y|1)$/i) %>
+  - name: sshd
+    exact_match: false
+    search_string:
+      - "sshd"
+  - name: monit
+    exact_match: false
+    search_string:
+      - "monit"
+  - name: bosh-agent
+    exact_match: false
+    search_string:
+      - "bosh-agent"
+<% end %>
+
+EOF
+<% end %>
+
+
+# NTP
+<% if p('dd.generate_ntp_config') == true || p('dd.generate_ntp_config') =~ (/(true|t|yes|y|1)$/i) %>
+cat <<EOF > "${CONFD_DIR}/ntp.yaml"
+---
+init_config:
+
+instances:
+  - host: <%= p("dd.generate_ntp_config_host", "0.ubuntu.pool.ntp.org") %>
+    offset_threshold: <%= p("dd.generate_ntp_config_offset_threshold", "60") %>
+    min_collection_interval: <%= p("dd.generate_ntp_config_min_collection_interval", "60") %>
+    port: ntp
+    version: 3
+    timeout: 30
+
+EOF
+<% end %>
+
+
+# Mounts
+<% if p('dd.generate_disk_config') == true || p('dd.generate_disk_config') =~ (/(true|t|yes|y|1)$/i) %>
+cat <<EOF > "${CONFD_DIR}/disk.yaml"
+---
+init_config:
+
+instances:
+  - use_mount: yes
+    tag_by_filesystem: <%= p("dd.generate_disk_config_tag_by_filesystem", "yes") %>
+    all_partitions: <%= p("dd.generate_disk_config_all_partitions", "yes") %>
+
+EOF
+<% end %>
+
+
+# Integrations
+<% p("dd.integrations", {}).each do |integration, config| %>
+cat <<'YAML' > "${CONFD_DIR}/<%= integration %>.yaml"
+<%= JSON.dump(config) %>
+YAML
+
+<% end %>
+
