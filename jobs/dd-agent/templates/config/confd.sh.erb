@@ -141,6 +141,21 @@ instances:
 EOF
 <% end %>
 
+# Network
+<% if p('dd.generate_network_config') == true || p('dd.generate_network_config') =~ (/(true|t|yes|y|1)$/i) %>
+cat <<EOF > "${CONFD_DIR}/network.yaml"
+---
+init_config:
+
+instances:
+  - collect_connection_state: <%= p("dd.generate_network_config_connection_state", "yes") %>
+    excluded_interfaces:
+<% p("dd.generate_network_config_excluded_interfaces", []).each do |inet| %>
+      - <%= inet %>
+<% end %>
+
+EOF
+<% end %>
 
 # Mounts
 <% if p('dd.generate_disk_config') == true || p('dd.generate_disk_config') =~ (/(true|t|yes|y|1)$/i) %>

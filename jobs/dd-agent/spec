@@ -139,6 +139,15 @@ properties:
   dd.generate_ntp_config_min_collection_interval:
     default: 300
     description: Metrics collection interval
+  dd.generate_network_config:
+    default: yes
+    description: Automatically generate network monitoring integration, network.yaml
+  dd.generate_network_config_connection_state:
+    default: yes
+    description: Report metrics including the state of the nics
+  dd.generate_network_config_excluded_interfaces:
+    default: ["lo", "lo0"]
+    description: List of the network interfaces to exclude from reporting metrics
   dd.generate_disk_config:
     default: yes
     description: Generate disk configuration, disk.yaml
