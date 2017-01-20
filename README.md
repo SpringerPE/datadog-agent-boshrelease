@@ -48,17 +48,16 @@ git submodule init
 git submodule update
 ```
 to update the gohai submodule. Gohai is a binary (golang) used by Datadog Agent to collect
-basic information from the server.
-
-Download all sources:
+basic information from the server. There is a script `bosh_prepare` which also does that
+and downloads all sources to the `blobs` directory:
 ```
 ./bosh_prepare
 ```
 
-It will download all sources specified in the spec file (commented out) of each job, then you
+It will get all sources specified in the packages/*/spec files (commented out), then you
 can create the release with:
 ```
-bosh create release --force --name datadog-agent-boshrelease 
+bosh create release --force --name datadog-agent-boshrelease
 ```
 
 and upload to BOSH director:
