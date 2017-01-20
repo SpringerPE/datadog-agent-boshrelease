@@ -55,24 +55,13 @@ and downloads all sources to the `blobs` directory:
 ```
 
 It will get all sources specified in the packages/*/spec files (commented out), then you
-can create the release with:
-```
-bosh create release --force --name datadog-agent-boshrelease
-```
-
-and upload to BOSH director:
-
-```
-bosh upload release
-```
-
-To create a final release:
+can create the release (final) with:
 ```
 bosh create release --force --with-tarball --final --name datadog-agent
 git tag <version>
 git push origin --tags
 ```
-and then upload the tarball to github
+and then upload the tarball to github and Bosh Director.
 
 
 # Author
