@@ -4,14 +4,6 @@ name: dd-agent
 description: Datadog Agent
 
 packages:
-- bzip2
-- zlib
-- libyaml
-- libffi
-- openssl
-- python27
-- setuptools
-- pip
 - dd-agent
 
 templates:
