@@ -31,14 +31,20 @@ for package_dir in $(ls -d /var/vcap/packages/*); do
     for package_lib_dir in $(ls -d ${package_dir}/lib/python*/lib-dynload 2>/dev/null); do
       LD_LIBRARY_PATH="${package_lib_dir}:${LD_LIBRARY_PATH}"
     done
+    for package_lib_dir in $(ls -d ${package_dir}/lib/python*/site-packages 2>/dev/null); do
+      LD_LIBRARY_PATH="${package_lib_dir}:${LD_LIBRARY_PATH}"
+    done
   fi
 done
-export PATH="$PACKAGES/dd-agent/agent:$PACKAGES/dd-agent/embedded/bin:$PATH"
-for package_bin_dir in $(ls -d $PACKAGES/$NAME/embedded/lib 2>/dev/null); do
-    LD_LIBRARY_PATH="${package_bin_dir}:${LD_LIBRARY_PATH}"
+export PATH="$PACKAGES/$NAME/checks.d:$PACKAGES/$NAME/agent:$PACKAGES/$NAME/embedded/bin:$PATH"
+for package_lib_dir in $(ls -d $PACKAGES/$NAME/embedded/lib 2>/dev/null); do
+    LD_LIBRARY_PATH="${package_lib_dir}:${LD_LIBRARY_PATH}"
 done
-for package_bin_dir in $(ls -d $PACKAGES/$NAME/embedded/lib/python*/lib-dynload 2>/dev/null); do
-    LD_LIBRARY_PATH="${package_bin_dir}:${LD_LIBRARY_PATH}"
+for package_lib_dir in $(ls -d $PACKAGES/$NAME/embedded/lib/python*/lib-dynload 2>/dev/null); do
+    LD_LIBRARY_PATH="${package_lib_dir}:${LD_LIBRARY_PATH}"
+done
+for package_lib_dir in $(ls -d $PACKAGES/$NAME/embedded/lib/python*/site-packages 2>/dev/null); do
+    LD_LIBRARY_PATH="${package_lib_dir}:${LD_LIBRARY_PATH}"
 done
 export LD_LIBRARY_PATH
 
@@ -50,7 +56,7 @@ done
 for python_mod_dir in $(ls -d $PACKAGES/$NAME/embedded/lib/python*/site-packages 2>/dev/null); do
     PYTHONPATH="${python_mod_dir}:${PYTHONPATH}"
 done
-PYTHONPATH="$PACKAGES/$NAME/agent:$PACKAGES/$NAME/agent/checks/libs:$PYTHONPATH"
+PYTHONPATH="$PACKAGES/$NAME/agent:$PACKAGES/$NAME/agent/checks/libs:$PACKAGES/$NAME/checks.d:$PYTHONPATH"
 export PYTHONPATH
 
 # Setup log and tmp folders

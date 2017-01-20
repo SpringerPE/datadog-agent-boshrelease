@@ -22,8 +22,7 @@ case ${1:-help} in
     ldconf "$LD_LIBRARY_PATH"
     (
         {
-            exec chpst -v -u vcap:vcap \
-                "$JOB_DIR/packages/python27/bin/python" "$DD_DOGSTATSD" --use-local-forwarder
+            exec chpst -v -u vcap:vcap python "$DD_DOGSTATSD" --use-local-forwarder
         } >>$LOG_DIR/$COMPONENT.stdout.log \
         2>>$LOG_DIR/$COMPONENT.stderr.log
     ) &
