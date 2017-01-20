@@ -63,9 +63,20 @@ mkdir -p ${REQUIREMENTS_INSTALL_TARGET}
 echo "Creating python site packages folder ..."
 mkdir -p ${REQUIREMENTS_INSTALL_TARGET}/lib/python2.7/site-packages
 
+
+# In all these paths the priority is set to the current folder, why?
+# * to make it usable when contents from other packages are copied (integrated) on this package
+# * to reuse this package in other releases (as standalone package)
+# Python setuptools/pip install the contents and create the shebang based
+# on the python binary location, so sometimes the shebang does not point
+# a proper path in case the contents were copied from other package.
+
 echo "Setting the PYTHONPATH with setuptools and Datadog agent site packages ..."
 PYTHONPATH="${REQUIREMENTS_INSTALL_TARGET}/lib/python2.7/site-packages:${PYTHONPATH}"
 for package_python_dir in $(ls -d ${BOSH_PACKAGES_DIR}/*/lib/python*/site-packages 2>/dev/null); do
+    PYTHONPATH="${package_python_dir}:${PYTHONPATH}"
+done
+for package_python_dir in $(ls -d ${BOSH_INSTALL_TARGET}/lib/python*/site-packages 2>/dev/null); do
     PYTHONPATH="${package_python_dir}:${PYTHONPATH}"
 done
 export PYTHONPATH
@@ -75,20 +86,20 @@ CPATH="${BOSH_PACKAGES_DIR}/libffi/lib/libffi-${LIBFFI_VERSION}/include"
 for package_cpath_dir in $(ls -d ${BOSH_PACKAGES_DIR}/*/include 2>/dev/null); do
     CPATH="${package_cpath_dir}:${CPATH}"
 done
-export CPATH
+export CPATH="${BOSH_INSTALL_TARGET}/include:${CPATH}"
 
 echo "Setting libs path ..."
 for package_lib_dir in $(ls -d ${BOSH_PACKAGES_DIR}/*/lib 2>/dev/null); do
     LIBRARY_PATH="${package_lib_dir}:${LIBRARY_PATH}"
 done
-export LIBRARY_PATH
+export LIBRARY_PATH="${BOSH_INSTALL_TARGET}/lib:${LIBRARY_PATH}"
 export LD_LIBRARY_PATH="${LIBRARY_PATH}"
 
 echo "Setting path ..."
 for package_bin_dir in $(ls -d ${BOSH_PACKAGES_DIR}/*/bin 2>/dev/null); do
     PATH="${package_bin_dir}:${PATH}"
 done
-export PATH
+export PATH="${BOSH_INSTALL_TARGET}/bin:${PATH}"
 
 pushd "dd-agent-${DD_AGENT_VERSION}"
   echo "Installing main requirements.txt ..."
@@ -102,3 +113,4 @@ pushd "dd-agent-${DD_AGENT_VERSION}"
   PIP_COMMAND="pip" PIP_OPTIONS="--prefix=${REQUIREMENTS_INSTALL_TARGET} --compile" ./utils/pip-allow-failures.sh requirements-opt.txt
   # pip install --prefix=${REQUIREMENTS_INSTALL_TARGET} --compile -r requirements-opt.txt
 popd
+
