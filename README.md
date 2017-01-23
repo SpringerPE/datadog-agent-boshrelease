@@ -62,7 +62,8 @@ bosh create release --with-tarball --final --name datadog-agent
 git tag <version>
 git push origin --tags
 ```
-and then upload the tarball to github and Bosh Director.
+and then upload the tarball to github and Bosh Director. In order to make the blobs public
+in the S3 bucket, run `./config/bucket.sh`
 
 
 ### Note

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-# Create the bucket for blobs
-
+# Create the bucket for blobs and setup public read access
 BUCKET=datadog-agent-boshrelease
 
 s3cmd mb "s3://${BUCKET}"
