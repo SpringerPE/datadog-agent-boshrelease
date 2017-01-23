@@ -1,3 +1,4 @@
 [submodule "src/gohai"]
 	path = src/gohai
 	url = https://github.com/DataDog/gohai.git
+        ignore = dirty
