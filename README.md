@@ -83,9 +83,10 @@ Here, the second option is used.
 
 # Author
 
-Jose Riguera Lopez (jose.riguera@springer.com)
+Springer Nature Platform Engineering, Jose Riguera Lopez (jose.riguera@springer.com)
 
-Springer Nature Platform Engineering
+Copyright 2017 Springer Nature
+
 
 
 # License
