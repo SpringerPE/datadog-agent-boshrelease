@@ -10,9 +10,10 @@ export PACKAGES="$JOB_DIR/packages"
 export COMPONENT=${2:-$NAME}
 
 # Setup the PATH and LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-''}
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-''}
 for package_dir in $(ls -d /var/vcap/packages/*); do
   has_busybox=0
+  temp_path=${PATH}
   # Add all packages' /bin & /sbin into $PATH
   for package_bin_dir in $(ls -d ${package_dir}/*bin 2>/dev/null); do
     # Do not add any packages that use busybox, as impacts builtin commands and
@@ -20,10 +21,11 @@ for package_dir in $(ls -d /var/vcap/packages/*); do
     if [ -f ${package_bin_dir}/busybox ]; then
       has_busybox=1
     else
-      PATH=${package_bin_dir}:$PATH
+      temp_path=${package_bin_dir}:${temp_path}
     fi
   done
   if [ "$has_busybox" == "0" ]; then
+    PATH=${temp_path}
     if [ -d ${package_dir}/lib ]; then
       LD_LIBRARY_PATH="${package_dir}/lib:$LD_LIBRARY_PATH"
     fi
