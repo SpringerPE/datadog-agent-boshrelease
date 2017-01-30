@@ -58,12 +58,9 @@ submouldes commands and downloads all sources to the `blobs` directory:
 It will get all sources specified in the packages/*/spec files (commented out) for
 local development, then you can create the release (final) with:
 ```
-bosh create release --with-tarball --final --name datadog-agent
-git tag <version>
-git push origin --tags
+./bosh_final_release
 ```
-and then upload the tarball to github and Bosh Director. In order to make the blobs public
-in the S3 bucket, run `./config/bucket.sh`
+which will upload the tarball to github and make the new blobs public available in the S3 bucket
 
 
 ### Note
