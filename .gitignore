@@ -16,3 +16,6 @@ blobs/*
 #*
 tmp
 my*.yml
+.DS_Store
+blobstore
+releases/datadog-agent/*.tgz
