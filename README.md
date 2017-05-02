@@ -57,11 +57,9 @@ tags:
   email: support@datadoghq.com
 ```
 
-Upload runtime-config to Bosh Director: `bosh update runtime-config  runtime-config.yaml`
+Upload runtime-config to Bosh Director: `bosh update runtime-config runtime-config.yaml`
 
 Re-deploy the deployments to automatically add the agent.
-
-You can also add the release to the manifest and deploy it
 
 
 # Development
