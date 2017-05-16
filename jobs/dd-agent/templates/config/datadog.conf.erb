@@ -46,6 +46,7 @@ tags = p('dd.tags', []) + generated_tags.map { |k, v| "#{k}:#{v}" }
 # The firehose nozzle uses this tag, which is frustrating, but we want the data to be able to conform
 tags += ["index:#{spec.id}"] if spec.id and not spec.id.empty?
 tags += ["ip:#{spec.ip}"] if spec.ip and not spec.ip.empty?
+tags += ["cloudfoundry"]
 %>
 tags: <%= tags.join(', ') %>
 
