@@ -1,6 +1,6 @@
 # Datadog Agent release for BOSH
 
-* For debian and rpm based stemcells
+* For Debian and RHEL/CentOS based stemcells
 * Automatically defines tags based on deployments, names and jobs
 * Process, network, ntp and disk integrations by default
 * Monit processes are added automatically to process integration
@@ -9,7 +9,7 @@
 
 # What this does
 
-This includes the rpm and debian releases in the package and unpacks them in the dd-agent directory.
+This includes the Debian and RHEL/CentOS releases in the package and unpacks them in the dd-agent directory.
 
 While a source install would be preferable, we're balancing a number of concerns.
 
