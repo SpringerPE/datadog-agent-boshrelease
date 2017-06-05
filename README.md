@@ -1,6 +1,6 @@
 # Datadog Agent release for BOSH
 
-* For debian and rpm based stemcells (more to come)
+* For Debian and RHEL/CentOS based stemcells
 * Automatically defines tags based on deployments, names and jobs
 * Process, network, ntp and disk integrations by default
 * Monit processes are added automatically to process integration
@@ -9,7 +9,7 @@
 
 # What this does
 
-This includes the rpm and debian releases in the package and unpacks them in the dd-agent directory.
+This includes the Debian and RHEL/CentOS releases in the package and unpacks them in the dd-agent directory.
 
 While a source install would be preferable, we're balancing a number of concerns.
 
@@ -76,13 +76,18 @@ It will get all sources specified in the packages/\*/spec files for local develo
 The default blobstore is our s3 bucket, however you can change this to any blobstore you like. We have a yaml file set up to use a local blobstore as well, if for some reason you cannot use a remote one.
 
 
-# Author
+# Authors
+Datadog (opensource@datadoghq.com)
 
-Springer Nature Platform Engineering, Jose Riguera Lopez (jose.riguera@springer.com)
+Based on the [https://github.com/SpringerPE/datadog-agent-boshrelease](https://github.com/SpringerPE/datadog-agent-boshrelease) project by [Springer Nature Platform Engineering](https://github.com/SpringerPE/)
 
-Copyright 2017 Springer Nature
-Copyright 2017 Datadog, Inc
+# Contribute
 
+If you notice a limitation or a bug with this project, feel free to open a Github issue or submit a PR. 
+
+# Support
+
+Support for this project is available via standard [Datadog support channels](http://docs.datadoghq.com/help/).
 
 # License
 
