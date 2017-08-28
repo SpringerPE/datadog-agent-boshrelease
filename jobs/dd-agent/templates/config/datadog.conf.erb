@@ -25,6 +25,9 @@ api_key: <%= p('dd.api_key') %>
 <% if_p("dd.hostname") do |hostname| %>
 hostname: <%= hostname %>
 <% end.else do %>
+<% if_p("dd.use_uuid_hostname") do |hostname| %>
+hostname: <%= hostname %>
+<% end.else do %>
 hostname: <%= spec.name.tr('_', '-') %>-<%= spec.index %>
 <% end %>
 
@@ -264,6 +267,9 @@ dogstreams: <%= dogstreams.join(', ') %>
 custom_emitters: <%= custom_emitters.join(', ') %>
 <% end %>
 
+<% if p('dd.process_agent_enabled', false) == true || p('dd.process_agent_enabled', false) =~ (/(true|t|yes|y|1)$/i) %>
+process_agent_enabled: true
+<% end %>
 
 # ========================================================================== #
 # Logging
@@ -280,3 +286,6 @@ jmxfetch_log_file: /var/vcap/sys/log/dd-agent/jmxfetch.log
 log_to_syslog: no
 # syslog_host:
 # syslog_port:
+
+[process.config]
+log_file: /var/vcap/sys/log/dd-agent/process_agent.log
