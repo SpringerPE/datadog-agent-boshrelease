@@ -1,11 +1,8 @@
 ---
 name: dd-agent
-
 description: Datadog Agent
-
 packages:
 - dd-agent
-
 templates:
   data/properties.sh.erb: data/properties.sh
   config/datadog.conf.erb: config/datadog.conf
@@ -16,7 +13,6 @@ templates:
   bin/jmxfetch_ctl: bin/jmxfetch_ctl
   bin/process_agent_ctl: bin/process_agent_ctl
   bin/pre-start: bin/pre-start
-
 properties:
   dd.url:
     default: "https://app.datadoghq.com"
@@ -126,10 +122,10 @@ properties:
     description: Automatically generate process monitoring integration, process.yaml
   dd.generate_monit_processes:
     default: yes
-    description: Add monit processes to process.yaml
+    description: Add monit processes to process check
   dd.generate_system_processes:
     default: yes
-    description: Add basic system processes to process.yaml
+    description: Add basic system processes to process check
   dd.generate_ntp_config:
     default: yes
     description: Generate NTP monitoring ntp.yaml
