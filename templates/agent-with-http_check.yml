@@ -1,0 +1,46 @@
+# Example manifest for deploying an agent for doing http health check
+# This manifest is designed to monitor SCS Fortune Teller
+# Deploy like:
+# bosh -e target -d dd-agent deploy agent-with-http_check.yml -v network_name=default -v azs=z1 -v vm_type=large -v api_key=xxxx
+name: dd-agent
+releases:
+- name: datadog-agent
+  url: https://bosh.io/d/github.com/DataDog/datadog-agent-boshrelease?v=1.2.5200
+  sha1: 109ebe33aa0b32a46bb2203169dea77d00a3500b
+  version: "1.2.5200"
+
+instance_groups:
+- name: dd-agent
+  instances: 1
+  azs: [((azs))]
+  networks: [{name: ((network_name))}]
+  stemcell: trusty
+  vm_type: ((vm_type))
+  jobs:
+  - name: dd-agent
+    release: datadog-agent
+    properties:
+      dd:
+        use_dogstatsd: yes
+        api_key: ((api_key))
+        integrations:
+          http_check:
+            init_config:
+            instances:
+            - name: fortune-teller
+              url: http://fortunes-ui.apps.company/random
+              timeout: 5
+              content_match: "Your future is bright!"
+              reverse_content_match: true
+              skip_event: true
+stemcells:
+- alias: trusty
+  os: ubuntu-trusty
+  version: latest
+
+update:
+  canaries: 1
+  max_in_flight: 3
+  serial: false
+  canary_watch_time: 1000-60000
+  update_watch_time: 1000-60000
