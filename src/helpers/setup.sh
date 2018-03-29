@@ -30,7 +30,7 @@ done
 for package_lib_dir in $(ls -d $PACKAGES/dd-agent/embedded/lib/python*/site-packages 2>/dev/null); do
     LD_LIBRARY_PATH="${package_lib_dir}:${LD_LIBRARY_PATH}"
 done
-export LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
 # Python modules
 PYTHONPATH=${PYTHONPATH:-''}
@@ -38,24 +38,34 @@ PYTHONPATH="$PACKAGES/dd-agent/embedded/lib/python2.7:${PYTHONPATH}"
 for python_mod_dir in $(ls -d $PACKAGES/dd-agent/embedded/lib/python*/site-packages 2>/dev/null); do
     PYTHONPATH="${python_mod_dir}:${PYTHONPATH}"
 done
-PYTHONPATH="$PACKAGES/$NAME/agent:$PACKAGES/dd-agent/agent/checks/libs:$PACKAGES/$NAME/checks.d:$PYTHONPATH"
-export PYTHONPATH
+PYTHONPATH="$PACKAGES/$NAME/checks.d:$PYTHONPATH"
+PYTHONPATH="$PACKAGES/dd-agent/agent/checks/libs:$PYTHONPATH"
+PYTHONPATH="$PACKAGES/$NAME/agent:$PYTHONPATH"
+PYTHONPATH="$PACKAGES/dd-agent/embedded/lib/python27.zip:$PYTHONPATH"
+PYTHONPATH="$PACKAGES/dd-agent/embedded/lib/python2.7:$PYTHONPATH"
+PYTHONPATH="$PACKAGES/dd-agent/embedded/lib/python2.7/plat-linux2:$PYTHONPATH"
+PYTHONPATH="$PACKAGES/dd-agent/embedded/lib/python2.7/lib-tk:$PYTHONPATH"
+PYTHONPATH="$PACKAGES/dd-agent/embedded/lib/python2.7/lib-old:$PYTHONPATH"
+PYTHONPATH="$PACKAGES/dd-agent/embedded/lib/python2.7/lib-dynload:$PYTHONPATH"
+export PYTHONPATH="$PACKAGES/$NAME/bin/agent/dist:$PYTHONPATH"
+
+export PYTHONHOME="$PACKAGES/$NAME/embedded/"
 
 # Setup log and tmp folders
 export LOG_DIR="/var/vcap/sys/log/$NAME"
-mkdir -p "$LOG_DIR" && chmod 775 "$LOG_DIR" && chown vcap "$LOG_DIR"
+mkdir -p "$LOG_DIR" && chmod 775 "$LOG_DIR" && chown -R vcap "$LOG_DIR"
 
 export RUN_DIR="/var/vcap/sys/run/$NAME"
-mkdir -p "$RUN_DIR" && chmod 775 "$RUN_DIR" && chown vcap "$RUN_DIR"
+mkdir -p "$RUN_DIR" && chmod 775 "$RUN_DIR" && chown -R vcap "$RUN_DIR"
 
 export PIDFILE="${RUN_DIR}/${COMPONENT}.pid"
 
 export TMP_DIR="/var/vcap/sys/tmp/$NAME"
-mkdir -p "$TMP_DIR" && chmod 775 "$TMP_DIR" && chown vcap "$TMP_DIR"
+mkdir -p "$TMP_DIR" && chmod 775 "$TMP_DIR" && chown -R vcap "$TMP_DIR"
 export TMPDIR="$TMP_DIR"
 
 export CONFD_DIR="${JOB_DIR}/config/conf.d"
-mkdir -p "$CONFD_DIR" && chmod 775 "$CONFD_DIR" && chown vcap "$CONFD_DIR"
+mkdir -p "$CONFD_DIR" && chmod 775 "$CONFD_DIR" && chown -R vcap "$CONFD_DIR"
 
 export LANG=POSIX
 
